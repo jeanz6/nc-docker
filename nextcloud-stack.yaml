@@ -1,0 +1,49 @@
+version: '3.6'
+services:
+  #traefik:
+  #  image: traefik:2.0
+  #  ports:
+  #    - "80:80"
+  #    - "8080:8080"
+  #  networks:
+  #    - internal
+  #  volumes:
+  #    - ./traefik.toml:/etc/traefik/traefik.toml
+  #    - /var/run/docker.sock:/var/run/docker.sock
+  #  deploy:
+  #   replicas: 1
+  debianweb:
+   image: 'jeanz6/nextcloud:5'
+   #labels:
+     #- "traefik.frontend.rule=Host:debianweb.physi.uni-heidelberg.de"
+     #- "traefik.docker.network=internal"
+   ports:
+    - "80:80"
+    - "443:443"
+   volumes:
+     - '/data0:/data'
+     - 'ncdata:/var/www/nextcloud/'
+   networks: 
+     - internal
+   deploy:
+    replicas: 1
+  db:
+   image: 'mariadb:10.3'
+   environment: 
+    MYSQL_DATABASE: "nextcloud"
+    MYSQL_USER: "nextcloud"
+    MYSQL_PASSWORD: "nextcloud"
+    MYSQL_RANDOM_ROOT_PASSWORD: "yes" 
+   volumes:
+     - 'ncdb:/var/lib/mysql'
+   networks:
+    - internal
+   deploy:
+     replicas: 1
+networks:
+  internal:
+    driver: overlay
+volumes: 
+  ncdata:
+  ncdb:
+    
